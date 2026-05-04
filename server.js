@@ -19,6 +19,7 @@ mongoose.connect(dbConfig.url)
   });
 
 const User = require("./models/Users.js");
+
 //CREATE
 app.post("/users", async function (req, res) {
   try {
@@ -40,3 +41,45 @@ app.post("/users", async function (req, res) {
     });
   }
 });
+//READ
+app.get("/users", async function (req, res) {
+  try {
+    const users = await User.find();
+    res.send(users);
+  } catch (err) {
+    res.status(500).send({
+      message: "Error retrieving users"
+    });
+  }
+});
+//UPDATE
+app.put("/users/:id", async function (req, res) {
+  try {
+    const id = req.params.id;
+    const name = req.body.name;
+    const age = req.body.age;
+    const updatedUser = await User.findByIdAndUpdate(id, {
+      name: name,
+      age: age
+    }, { new: true });
+    res.send(updatedUser);
+  } catch (err) {
+    res.status(500).send({
+      message: "Error updating user"
+    });
+  }
+}); 
+//DELETE
+app.delete("/users/:id", async function (req, res) {
+  try {
+    const id = req.params.id;
+    await User.findByIdAndDelete(id);
+    res.send({
+      message: "User deleted successfully"
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: "Error deleting user"
+    });
+  }
+}); 
